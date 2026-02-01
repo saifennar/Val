@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Will you be my Valentine? 💕</title>
     <style>
         * {
@@ -13,30 +13,35 @@
 
         body {
             min-height: 100vh;
+            min-height: 100dvh;
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
-            touch-action: manipulation;
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
 
         .container {
             background: white;
             border-radius: 24px;
-            padding: 40px 50px;
+            padding: 40px 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             text-align: center;
             max-width: 90%;
-            width: 400px;
+            width: 380px;
             position: relative;
+            z-index: 10;
         }
 
         .cat {
-            font-size: 80px;
+            font-size: 70px;
             margin-bottom: 20px;
             animation: float 3s ease-in-out infinite;
+            display: block;
         }
 
         @keyframes float {
@@ -46,9 +51,10 @@
 
         h1 {
             color: #333;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             margin-bottom: 30px;
             font-weight: 600;
+            line-height: 1.4;
         }
 
         .name {
@@ -61,22 +67,22 @@
             gap: 15px;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
-            min-height: 80px;
-            position: relative;
+            min-height: 60px;
         }
 
         .btn-yes {
             background: linear-gradient(135deg, #e91e63, #f06292);
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.3rem;
+            padding: 15px 35px;
+            font-size: 1.2rem;
             font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 8px 25px rgba(233, 30, 99, 0.4);
+            position: relative;
+            z-index: 20;
         }
 
         .btn-yes:hover {
@@ -92,26 +98,23 @@
             background: #888;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 15px 30px;
             font-size: 1rem;
             font-weight: 500;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            position: absolute;
-            user-select: none;
-            -webkit-user-select: none;
+            position: fixed;
+            z-index: 100;
             touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .hint {
             margin-top: 25px;
             color: #999;
             font-size: 0.9rem;
-        }
-
-        .hint::before {
-            content: "😏 ";
         }
 
         /* Success state */
@@ -127,11 +130,11 @@
             align-items: center;
             flex-direction: column;
             z-index: 1000;
-            animation: fadeIn 0.5s ease;
         }
 
         .success-overlay.show {
             display: flex;
+            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
@@ -140,7 +143,7 @@
         }
 
         .success-overlay .hearts {
-            font-size: 100px;
+            font-size: 80px;
             animation: pulse 0.5s ease infinite alternate;
         }
 
@@ -151,13 +154,13 @@
 
         .success-overlay h2 {
             color: #e91e63;
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-top: 20px;
         }
 
         .success-overlay p {
             color: #666;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-top: 10px;
         }
 
@@ -170,7 +173,7 @@
             height: 100%;
             pointer-events: none;
             overflow: hidden;
-            z-index: -1;
+            z-index: 1;
         }
 
         .heart {
@@ -196,25 +199,6 @@
                 opacity: 0;
             }
         }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 30px 25px;
-            }
-            
-            h1 {
-                font-size: 1.4rem;
-            }
-            
-            .cat {
-                font-size: 60px;
-            }
-            
-            .btn-yes {
-                padding: 12px 30px;
-                font-size: 1.1rem;
-            }
-        }
     </style>
 </head>
 <body>
@@ -224,13 +208,14 @@
         <div class="cat">😺💕</div>
         <h1><span class="name">Khaoula rou7iii</span>, veux-tu être ma Valentine ?</h1>
         
-        <div class="buttons" id="buttonsContainer">
+        <div class="buttons">
             <button class="btn-yes" id="yesBtn">Oui ! 💖</button>
-            <button class="btn-no" id="noBtn">Non</button>
         </div>
         
-        <p class="hint" id="hint">"Non" semble un peu timide...</p>
+        <p class="hint" id="hint">😏 "Non" semble un peu timide...</p>
     </div>
+
+    <button class="btn-no" id="noBtn">Non</button>
 
     <div class="success-overlay" id="successOverlay">
         <div class="hearts">💕💖💕</div>
@@ -243,18 +228,26 @@
         const yesBtn = document.getElementById('yesBtn');
         const hint = document.getElementById('hint');
         const successOverlay = document.getElementById('successOverlay');
-        const container = document.querySelector('.container');
         const floatingHearts = document.getElementById('floatingHearts');
 
+        // Position initiale du bouton Non
+        function initNoButton() {
+            const btnWidth = 100;
+            const btnHeight = 50;
+            noBtn.style.left = (window.innerWidth / 2 + 60) + 'px';
+            noBtn.style.top = (window.innerHeight / 2 + 20) + 'px';
+        }
+        initNoButton();
+
         const hints = [
-            '"Non" semble un peu timide... 😏',
-            'Tu es sûr(e) ? 🤔',
-            'Le bouton "Non" a peur ! 😱',
-            'Il s'enfuit encore ! 🏃',
-            'Tu ne peux pas m'échapper ! 💕',
-            'Allez, dis oui ! 🥺',
-            'Le "Non" est impossible ! 😄',
-            'C'est le destin ! ✨'
+            '😏 "Non" semble un peu timide...',
+            '🤔 Tu es sûr(e) ?',
+            '😱 Le bouton "Non" a peur !',
+            '🏃 Il s\'enfuit encore !',
+            '💕 Tu ne peux pas m\'échapper !',
+            '🥺 Allez, dis oui !',
+            '😄 Le "Non" est impossible !',
+            '✨ C\'est le destin !'
         ];
         let hintIndex = 0;
 
@@ -272,60 +265,71 @@
         }
         createFloatingHearts();
 
-        // Get random position for the No button
-        function moveNoButton() {
-            const containerRect = container.getBoundingClientRect();
-            const btnRect = noBtn.getBoundingClientRect();
-            
-            // Calculate boundaries (keep button visible on screen)
-            const maxX = window.innerWidth - btnRect.width - 20;
-            const maxY = window.innerHeight - btnRect.height - 20;
-            
-            let newX, newY;
-            let attempts = 0;
-            
-            do {
-                newX = Math.random() * maxX;
-                newY = Math.random() * maxY;
-                attempts++;
-            } while (
-                // Avoid placing too close to Yes button
-                Math.abs(newX - yesBtn.getBoundingClientRect().left) < 150 &&
-                Math.abs(newY - yesBtn.getBoundingClientRect().top) < 80 &&
-                attempts < 10
-            );
+        // Déplacer le bouton Non
+        function moveNoButton(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
 
-            noBtn.style.position = 'fixed';
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+            const padding = 20;
+
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+
+            let newX = padding + Math.random() * (maxX - padding);
+            let newY = padding + Math.random() * (maxY - padding);
+
+            // Éviter la zone du bouton Oui
+            const yesRect = yesBtn.getBoundingClientRect();
+            const safeZone = 100;
+            
+            if (newX > yesRect.left - safeZone && newX < yesRect.right + safeZone &&
+                newY > yesRect.top - safeZone && newY < yesRect.bottom + safeZone) {
+                if (newY < window.innerHeight / 2) {
+                    newY = yesRect.bottom + safeZone;
+                } else {
+                    newY = yesRect.top - btnHeight - safeZone;
+                }
+            }
+
+            // S'assurer que le bouton reste visible
+            newX = Math.max(padding, Math.min(newX, maxX));
+            newY = Math.max(padding, Math.min(newY, maxY));
+
             noBtn.style.left = newX + 'px';
             noBtn.style.top = newY + 'px';
-            noBtn.style.transition = 'all 0.2s ease';
 
-            // Update hint
-            hint.textContent = hints[hintIndex % hints.length];
-            hintIndex++;
+            // Mettre à jour le hint
+            hintIndex = (hintIndex + 1) % hints.length;
+            hint.textContent = hints[hintIndex];
+
+            return false;
         }
 
-        // Desktop: mouse events
+        // Events pour desktop
         noBtn.addEventListener('mouseenter', moveNoButton);
         noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('click', moveNoButton);
 
-        // Mobile: touch events
-        noBtn.addEventListener('touchstart', (e) => {
+        // Events pour mobile - IMPORTANT
+        noBtn.addEventListener('touchstart', moveNoButton, { passive: false });
+        noBtn.addEventListener('touchmove', moveNoButton, { passive: false });
+        noBtn.addEventListener('touchend', moveNoButton, { passive: false });
+
+        // Empêcher le zoom sur double tap
+        document.addEventListener('dblclick', function(e) {
             e.preventDefault();
-            moveNoButton();
         }, { passive: false });
 
-        // Also move on click attempt (backup)
-        noBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            moveNoButton();
-        });
-
         // Yes button click
-        yesBtn.addEventListener('click', () => {
+        yesBtn.addEventListener('click', function() {
             successOverlay.classList.add('show');
+            noBtn.style.display = 'none';
             
-            // Add confetti effect
+            // Confetti
             for (let i = 0; i < 50; i++) {
                 setTimeout(() => {
                     const heart = document.createElement('span');
@@ -339,12 +343,13 @@
             }
         });
 
-        // Prevent default touch behavior on No button area
-        document.addEventListener('touchmove', (e) => {
-            if (e.target === noBtn) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+        yesBtn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            yesBtn.click();
+        });
+
+        // Resize handler
+        window.addEventListener('resize', initNoButton);
     </script>
 </body>
 </html>
